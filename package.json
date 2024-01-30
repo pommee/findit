@@ -1,0 +1,42 @@
+{
+  "name": "findit",
+  "displayName": "FindIt",
+  "description": "Search for keywords project-wide",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "findit.find",
+        "title": "FindIt"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/escape-html": "^1.0.4",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@types/uuid": "^9.0.8",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.9",
+    "escape-html": "^1.0.3",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  }
+}
