@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { getWebviewContent } from './webview_content';
+import { getWebviewContent, init } from './webview_content';
+import { privateEncrypt } from 'crypto';
 
 let keyword = ""
 
@@ -15,14 +16,13 @@ async function activate(context: vscode.ExtensionContext) {
 			}
 		);
 
-		panel.webview.html = getWebviewContent([], "");
+		panel.webview.html = init();
 
 		panel.webview.onDidReceiveMessage(
 			message => {
 				switch (message.command) {
 					case 'updateResults':
 						keyword = message.keyword
-
 						searchAndUpdateResults(message.keyword, panel.webview)
 						return;
 					case 'openFile':
@@ -30,6 +30,9 @@ async function activate(context: vscode.ExtensionContext) {
 							openFile(message.filePath, message.lineNumber)
 						}
 						return;
+					case 'arrowKeyPress':
+						console.log(message);
+
 				}
 			},
 			undefined,
