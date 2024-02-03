@@ -30,7 +30,7 @@ export function getWebviewContent(
               .map((result) => {
                 return `
                 <div class="codePreviewLine">
-                  ${result.line} | ${escapeHtml(result.text)}
+                  ${escapeHtml(result.text)}
                 </div>
               `;
               })
@@ -67,6 +67,14 @@ function html(
         <div id="resultItems">${resultItems}</div>
         <div id="resultCodePreview">${codePreviewResultItems}</div>
         ${script_block}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+        <script>
+        document.querySelectorAll('div.codePreviewLine').forEach(el => {
+          hljs.highlightElement(el);
+        });
+        </script>
+
     </body>
     </html>
 
@@ -93,6 +101,7 @@ const head_block = `
         <meta charset="UTF-8">
         <meta name="viewport" content = "width=device-width, initial-scale=1.0">
         <title>Find It Results </title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
     </head>
 `;
 
@@ -202,8 +211,11 @@ const css = `
       padding-bottom: 10px;
       padding-left: 5px;
       padding-right: 5px;
-      background-color: #171717;
       margin-top: 20px;
+    }
+
+    .hljs {
+      background-color: #171717;
     }
 
     .codePreviewLine {
