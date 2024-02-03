@@ -1,29 +1,71 @@
 import escapeHtml from "escape-html";
+import * as vscode from "vscode";
+import { readLinesAroundLineNumber } from "./extension";
+import { build_file_list } from "./helpers";
 
-export function getWebviewContent(results: Array<{ file: string, line: number, text: string }>, keyword: string) {
-    let resultItems = "";
+export function getWebviewContent(
+  results: Array<{
+    file: vscode.Uri;
+    line: number;
+    text: string;
+  }>,
+  keyword: string,
+  panel: vscode.WebviewPanel
+) {
+  let resultItems = "";
+  let codePreviewResultItems = "";
 
-    if (results != null) {
-        resultItems = results.map((result, index) => {
-            let first_element_active = index == 0
-                ? "class=\"active\""
-                : ""
+  resultItems = build_file_list(results, 0);
 
-            return `
-            <div ${first_element_active} file="${escapeHtml(result.file)}" lineNumber="${escapeHtml(result.line.toString())}">
-                <b ${first_element_active}>${escapeHtml(result.file)}"</b> (Line ${result.line}): ${escapeHtml(result.text)}
-            </div>
-        `;
-        }).join('');
+  panel.webview.onDidReceiveMessage(async (message) => {
+    switch (message.command) {
+      case "arrowKeyPress":
+        try {
+          let codePreview = await readLinesAroundLineNumber(
+            message.filePath,
+            Number(message.lineNumber)
+          );
+          if (codePreview != null) {
+            codePreviewResultItems = codePreview
+              .map((result) => {
+                return `
+                <div class="codePreviewLine">
+                  ${result.line} | ${escapeHtml(result.text)}
+                </div>
+              `;
+              })
+              .join("");
+            resultItems = build_file_list(results, message.activeIndex);
+
+            panel.webview.html = html(
+              keyword,
+              resultItems,
+              codePreviewResultItems
+            );
+          }
+        } catch (error: any) {
+          console.error(error);
+        }
+        return;
     }
+  }, undefined);
 
-    return `
+  return html(keyword, resultItems, codePreviewResultItems);
+}
+
+function html(
+  keyword: string,
+  resultItems: string,
+  codePreviewResultItems: string
+) {
+  return `
     ${head_block}
     <body>
         ${css}
         <input type="text" id="keywordInput" placeholder="Search" value="${keyword}" />
         <h2>Keyword [<span id="keyword">${escapeHtml(keyword)}</span>]</h2>
         <div id="resultItems">${resultItems}</div>
+        <div id="resultCodePreview">${codePreviewResultItems}</div>
         ${script_block}
     </body>
     </html>
@@ -32,7 +74,7 @@ export function getWebviewContent(results: Array<{ file: string, line: number, t
 }
 
 export function init() {
-    return `
+  return `
     ${head_block}
     <body>
         ${css}
@@ -52,76 +94,85 @@ const head_block = `
         <meta name="viewport" content = "width=device-width, initial-scale=1.0">
         <title>Find It Results </title>
     </head>
-`
+`;
 
 const script_block = `
     <script>
-        const vscode = acquireVsCodeApi();
+    const vscode = acquireVsCodeApi();
 
-        const keywordInput = document.getElementById('keywordInput');
-        keywordInput.focus();
-        keywordInput.selectionStart = keywordInput.selectionEnd = keywordInput.value.length;
-        keywordInput.addEventListener('input', () => {
-            vscode.postMessage({ command: 'updateResults', keyword: keywordInput.value });
+    const keywordInput = document.getElementById("keywordInput");
+    keywordInput.focus();
+    keywordInput.selectionStart = keywordInput.selectionEnd =
+    keywordInput.value.length;
+    keywordInput.addEventListener("input", () => {
+    vscode.postMessage({ command: "updateResults", keyword: keywordInput.value });
+    });
+
+    const resultItems = document.getElementById("resultItems");
+    let activeIndex = 0;
+
+    resultItems.addEventListener("click", (event) => {
+    const target = event.target;
+
+    if (target.tagName === "DIV") {
+        const filePath = target.getAttribute("file");
+        const lineNumber = target.getAttribute("lineNumber");
+
+        vscode.postMessage({
+        command: "openFile",
+        filePath: filePath,
+        lineNumber: lineNumber,
         });
+    }
+    });
 
-        const resultItems = document.getElementById('resultItems');
-        let activeIndex = 0;
+    document.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        const divs = document.querySelectorAll("#resultItems div");
+        const activeDiv = document.querySelector("#resultItems div.active");
 
-        resultItems.addEventListener('click', (event) => {
-            const target = event.target;
+        if (activeDiv) {
+        activeIndex = Array.from(divs).indexOf(activeDiv);
+        activeDiv.classList.remove("active");
+        }
 
-            if (target.tagName === 'DIV') {
-                const filePath = target.getAttribute('file');
-                const lineNumber = target.getAttribute('lineNumber');
+        if (event.key === "ArrowUp" && activeIndex > 0) {
+        activeIndex--;
+        } else if (event.key === "ArrowDown" && activeIndex < divs.length - 1) {
+        activeIndex++;
+        }
 
-                vscode.postMessage({ command: 'openFile', filePath: filePath, lineNumber: lineNumber });
-            }
+        divs[activeIndex].classList.add("active");
+
+        const filePath = divs[activeIndex].getAttribute("file");
+        const lineNumber = divs[activeIndex].getAttribute("lineNumber");
+
+        vscode.postMessage({ 
+            command: "arrowKeyPress", 
+            key: event.key, 
+            filePath: filePath,
+            lineNumber: lineNumber,
+            activeIndex: activeIndex, });
+    } else if (event.key === "Enter") {
+        const activeDiv = document.querySelector("#resultItems div.active");
+
+        if (activeDiv) {
+        vscode.postMessage({
+            command: "openFile",
+            filePath: filePath,
+            lineNumber: lineNumber,
         });
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-                const divs = document.querySelectorAll('#resultItems div');
-                const activeDiv = document.querySelector('#resultItems div.active');
-
-                if (activeDiv) {
-                    activeIndex = Array.from(divs).indexOf(activeDiv);
-                    activeDiv.classList.remove('active');
-                }
-
-                if (event.key === 'ArrowUp' && activeIndex > 0) {
-                    activeIndex--;
-                } else if (event.key === 'ArrowDown' && activeIndex < divs.length - 1) {
-                    activeIndex++;
-                }
-
-                divs[activeIndex].classList.add('active');
-                vscode.postMessage({ command: 'arrowKeyPress', key: event.key });
-            } else if (event.key === 'Enter') {
-                const activeDiv = document.querySelector('#resultItems div.active');
-
-                if (activeDiv) {
-                    const filePath = activeDiv.getAttribute('file');
-                    const lineNumber = activeDiv.getAttribute('lineNumber');
-                    vscode.postMessage({ command: 'openFile', filePath: filePath, lineNumber: lineNumber });
-                }
-            }
-        });
+        }
+    }
+    });
     </script>
 `;
-
-
-
 
 const css = `
 <style>
 
     * {
         font-family: monospace, monospace;
-    }
-
-    #resultItems {
-        color: gray;
     }
 
     div {
@@ -142,5 +193,22 @@ const css = `
         margin-top: 20px;
     }
 
+    #resultItems {
+        color: gray;
+    }
+
+    #resultCodePreview {
+      padding-top: 10px;
+      padding-bottom: 10px;
+      padding-left: 5px;
+      padding-right: 5px;
+      background-color: #171717;
+      margin-top: 20px;
+    }
+
+    .codePreviewLine {
+      color: gray;
+    }
+
 </style>
-    `
+    `;

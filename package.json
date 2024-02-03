@@ -38,5 +38,9 @@
     "escape-html": "^1.0.3",
     "eslint": "^8.56.0",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@types/highlight.js": "^10.1.0",
+    "highlight.js": "^11.9.0"
   }
 }
