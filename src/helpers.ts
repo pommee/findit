@@ -11,7 +11,7 @@ export function build_file_list(
 ) {
   let resultItems = "";
 
-  if (results != null) {
+  if (results !== null) {
     resultItems = results
       .map((result, index) => {
         const isActive = index === activeIndex ? "active" : "";

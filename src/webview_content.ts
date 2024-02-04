@@ -25,7 +25,7 @@ export function getWebviewContent(
             message.filePath,
             Number(message.lineNumber)
           );
-          if (codePreview != null) {
+          if (codePreview !== null) {
             codePreviewResultItems = codePreview
               .map((result) => {
                 return `
