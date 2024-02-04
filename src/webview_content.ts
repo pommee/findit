@@ -161,10 +161,14 @@ const script_block = `
             filePath: filePath,
             lineNumber: lineNumber,
             activeIndex: activeIndex, });
+    console.log(event.key)
     } else if (event.key === "Enter") {
         const activeDiv = document.querySelector("#resultItems div.active");
 
         if (activeDiv) {
+        const filePath = activeDiv.getAttribute("file");
+        const lineNumber = activeDiv.getAttribute("lineNumber");
+
         vscode.postMessage({
             command: "openFile",
             filePath: filePath,

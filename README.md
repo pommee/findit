@@ -10,13 +10,9 @@ The "findit" extension for Visual Studio Code empowers users with a versatile an
 
 - Interactive Preview: Preview and navigate to search results directly within the extension.
 
-- Arrow Key Navigation: Navigate through search results using arrow keys for efficient exploration.
-
 - File Preview: View a quick preview of the file content for selected search results.
 
-- Intuitive Interface: A clean and intuitive interface ensures a seamless search experience.
-
-![feature X](images/preview.gif)
+![](images/preview.gif)
 
 ## Requirements
 
@@ -26,6 +22,19 @@ No additional requirements or dependencies are needed to use the "findit" extens
 
 The "findit" extension does not introduce any custom settings. It seamlessly integrates with Visual Studio Code, enhancing your code search experience without the need for additional configuration.
 
+## Usage
+
+| Action     | Command                                         | Description                                |
+| ---------- | ----------------------------------------------- | ------------------------------------------ |
+| Run findit | <kbd>CTRL</kbd> + <kbd>ALT</kbd> + <kbd>P</kbd> | Run the extension, will open in a new tab. |
+
+Once the extension is running it's very simple to navigate.
+
+| Action         | Command                                     | Description                                                                                 |
+| -------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Navigate files | <kbd>Arrow-Up</kbd> / <kbd>Arrow-down</kbd> | Go up/down the file-tree.                                                                   |
+| Open file      | <kbd>Enter</kbd>                            | Open selected file at specified line number.<br> This can also be achieved using the mouse. |
+
 ## Known Issues
 
-There are no known issues at the moment. If you encounter any unexpected behavior or have suggestions for improvement, please report them.
+There are no known issues at the moment. If you encounter any unexpected behavior or have suggestions for improvement, please report them [here](https://github.com/pommee/findit/issues).
