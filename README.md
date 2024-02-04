@@ -4,19 +4,19 @@ The "findit" extension for Visual Studio Code empowers users with a versatile an
 
 ## Features
 
-* Keyword Search: Easily search for keywords or phrases within your entire workspace.
+- Keyword Search: Easily search for keywords or phrases within your entire workspace.
 
-* Dynamic Results: Results are dynamically updated as you type, offering instant feedback.
+- Dynamic Results: Results are dynamically updated as you type, offering instant feedback.
 
-* Interactive Preview: Preview and navigate to search results directly within the extension.
+- Interactive Preview: Preview and navigate to search results directly within the extension.
 
-* Arrow Key Navigation: Navigate through search results using arrow keys for efficient exploration.
+- Arrow Key Navigation: Navigate through search results using arrow keys for efficient exploration.
 
-* File Preview: View a quick preview of the file content for selected search results.
+- File Preview: View a quick preview of the file content for selected search results.
 
-* Intuitive Interface: A clean and intuitive interface ensures a seamless search experience.
+- Intuitive Interface: A clean and intuitive interface ensures a seamless search experience.
 
-![feature X](preview.gif)
+![feature X](images/preview.gif)
 
 ## Requirements
 

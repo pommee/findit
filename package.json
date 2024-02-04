@@ -16,6 +16,7 @@
     "url": "https://github.com/pommee/findit/issues"
   },
   "publisher": "solo-dev-hugo",
+  "icon": "images/icon.png",
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
@@ -27,8 +28,6 @@
     ]
   },
   "scripts": {
-    "release": "semantic-release",
-    "test-release": "semantic-release --dry-run",
     "vscode:prepublish": "npm run esbuild-base -- --minify",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
     "esbuild": "npm run esbuild-base -- --sourcemap",
@@ -45,11 +44,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/npm": "^11.0.2",
     "@types/escape-html": "^1.0.4",
-    "escape-html": "^1.0.3",
-    "semantic-release": "^23.0.0"
+    "escape-html": "^1.0.3"
   }
 }
