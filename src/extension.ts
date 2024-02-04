@@ -45,7 +45,7 @@ export async function searchAndUpdateResults(
   keyword: string,
   panel: vscode.WebviewPanel
 ) {
-  const files = await vscode.workspace.findFiles("**/*");
+  const files = await vscode.workspace.findFiles("**/*", "**/node_modules/**");
   const results = [];
 
   for (const file of files) {
@@ -95,7 +95,7 @@ async function searchInFile(
       results.push({
         file: fileUri,
         line: i + 1,
-        text: line.trim(),
+        text: line,
       });
     }
   }
